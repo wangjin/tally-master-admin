@@ -1,15 +1,15 @@
 var http = (function () {
 
-
-    ajax = function (url, type, contentType, dataType, data, successCallback, errorCallback) {
+    ajax = function (url, method, contentType, dataType, data, successCallback, errorCallback, completeCallback) {
         $.ajax({
             url: url,
-            type: type,
+            method: method,
             contentType: contentType,
             dataType: dataType,
             data: data,
             success: successCallback,
-            error: errorCallback
+            error: errorCallback,
+            complete: completeCallback
         });
     };
 
@@ -22,12 +22,20 @@ var http = (function () {
         ajax(url, 'PUT', contentType, dataType, data, successCallback, errorCallback);
     };
 
+    del = function (url, contentType, dataType, data, successCallback, errorCallback,completeCallback) {
+        ajax(url, 'DELETE', contentType, dataType, data, successCallback, errorCallback,completeCallback);
+    };
+
     jsonPost = function (url, data, successCallback, errorCallback) {
         post(url, 'application/json;charset=utf-8', 'json', JSON.stringify(data), successCallback, errorCallback);
     };
 
     jsonPut = function (url, data, successCallback, errorCallback) {
         put(url, 'application/json;charset=utf-8', 'json', JSON.stringify(data), successCallback, errorCallback);
+    };
+
+    jsonDel = function (url, completeCallback, errorCallback) {
+        del(url, null, null, null, null, errorCallback, completeCallback);
     };
 
     processError = function (error, msg) {
@@ -39,6 +47,7 @@ var http = (function () {
     return {
         jsonPut: jsonPut,
         jsonPost: jsonPost,
+        jsonDel: jsonDel,
         post: post,
         put: put,
         processError: processError
