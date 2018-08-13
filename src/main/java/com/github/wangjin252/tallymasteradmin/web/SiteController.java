@@ -41,7 +41,7 @@ public class SiteController {
      * @param limit 每页记录数
      * @return PageModel<Site>
      */
-    @PostMapping(value = "/pageData")
+    @GetMapping(value = "/pageData")
     @ResponseBody
     public PageModel<Site> pageData(int page, int limit) {
         return siteService.findPage(page, limit);
