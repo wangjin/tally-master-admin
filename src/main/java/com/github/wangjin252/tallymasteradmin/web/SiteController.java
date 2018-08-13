@@ -42,6 +42,7 @@ public class SiteController {
      * @return PageModel<Site>
      */
     @PostMapping(value = "/pageData")
+    @ResponseBody
     public PageModel<Site> pageData(int page, int limit) {
         return siteService.findPage(page, limit);
     }
@@ -64,6 +65,7 @@ public class SiteController {
      * @return ResponseEntity<Site>
      */
     @PostMapping
+    @ResponseBody
     public ResponseEntity<Site> add(@RequestBody Site site) {
         try {
             site = siteService.saveOrUpdate(site);
@@ -82,6 +84,7 @@ public class SiteController {
      * @return ResponseEntity<Site>
      */
     @PutMapping
+    @ResponseBody
     public ResponseEntity<Site> edit(@RequestBody Site site) {
         try {
             site = siteService.saveOrUpdate(site);
@@ -100,6 +103,7 @@ public class SiteController {
      * @return ResponseEntity<Site>
      */
     @DeleteMapping(value = "/{id}")
+    @ResponseBody
     public ResponseEntity<Site> del(@PathVariable(value = "id") Integer id) {
         try {
             Site site = siteService.findById(id);
@@ -114,6 +118,6 @@ public class SiteController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
