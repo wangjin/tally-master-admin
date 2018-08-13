@@ -1,0 +1,39 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <springProperty scope="context" name="logName" source="log.name" defaultValue="application-log"/>
+    <springProperty scope="context" name="logPath" source="log.path" defaultValue="log-path"/>
+    <springProperty scope="context" name="logLevel" source="log.level" defaultValue="debug"/>
+    <springProperty scope="context" name="packageName" source="log.package.name" defaultValue="cn.com.connext"/>
+
+    <appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <File>${logPath}/${logName}.log</File>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>${logPath}/${logName}.%d{yyyy-MM-dd}.%i.log</FileNamePattern>
+            <maxHistory>180</maxHistory>
+            <maxFileSize>300MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{35} - %msg %n</Pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%thread] %-5level %logger{35} - %msg %n</pattern>
+            <charset>utf-8</charset>
+        </encoder>
+    </appender>
+
+
+    <logger name="${packageName}" level="${logLevel}" additivity="false">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="dailyRollingFileAppender"/>
+    </logger>
+
+    <root level="info">
+    </root>
+
+</configuration>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Roll Banner</title>
+    <meta th:remove="tag" th:include="fragment/scripts :: css-lib">
+    <meta th:remove="tag" th:include="fragment/scripts :: context-path">
+</head>
+<body>
+<script id="edit-dom" type="text/html">
+    <form class="layui-form" style="padding: 20px" lay-filter="user-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" autocomplete="off"
+                       placeholder="姓名" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="userName" lay-verify="required" autocomplete="off"
+                       placeholder="用户名" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-block">
+                <input type="password" name="password" lay-verify="required" autocomplete="off"
+                       placeholder="密码" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-block">
+                <input type="text" name="mobile" lay-verify="required|phone" autocomplete="off"
+                       placeholder="手机号码" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn edit-user" lay-submit="" lay-filter="edit-user">确定</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</script>
+
+<div class="layui-row">
+    <button class="layui-btn layui-btn-primary" id="add">新增</button>
+</div>
+<table class="layui-hide" id="user-table" lay-filter="user-table"></table>
+
+<object th:remove="tag" th:include="fragment/scripts :: js-lib"></object>
+
+<script type="text/html" id="userBar">
+    <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs edit" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    //JavaScript代码区域
+    layui.use(['element', 'table', 'form', 'layer', 'upload'], function () {
+        var table = layui.table, form = layui.form, layer = layui.layer;
+
+        //初始化表格
+        table.render({
+            elem: '#user-table'
+            , url: contextPath + 'user/pageData'
+            , height: parent.tabContentHeight - 20 - 38
+            , cols: [
+                [
+                    {checkbox: true, fixed: true}
+                    , {field: 'id', title: 'ID', width: 100}
+                    , {field: 'name', title: '姓名'}
+                    , {field: 'userName', title: '用户名'}
+                    , {field: 'mobile', title: '手机'}
+                    , {fixed: 'right', width: 200, align: 'center', toolbar: '#userBar', title: '操作'}
+                ]
+            ]
+            , id: 'userReload'
+            , page: true
+        });
+
+
+        $('#add').on('click', function () {
+            layer.open({
+                type: 1,
+                title: '编辑用户信息',
+                area: ['600px', '350px'],
+                content: $('#edit-dom').html(),
+                success: function (layero, index) {
+
+                    form.on('submit(edit-user)', function (callbackData) {
+                        var response = postData(contextPath + 'user', callbackData.field);
+                        if (response.ok) {
+                            // 正常
+                            table.reload('userReload');
+                            layer.close(index);
+                        } else {
+                        }
+
+                        return false;
+                    });
+
+                    form.render();
+
+                },
+                cancel: function () {
+                }
+
+            });
+        });
+
+
+        // 监听表格工具栏
+        table.on('tool(user-table)', function (obj) {
+
+            var data = obj.data; //获得当前行数据
+            var layEvent = obj.event; //获得 lay-event 对应的值
+
+
+            switch (layEvent) {
+
+                case 'edit':
+                    layer.open({
+                        type: 1,
+                        title: '编辑用户信息',
+                        area: ['600px', '350px'],
+                        content: $('#edit-dom').html(),
+                        success: function (layero, index) {
+
+                            // 表单赋值
+                            form.val('user-form', {
+                                'name': data.name,
+                                'userName': data.userName,
+                                'password': data.password,
+                                'mobile': data.mobile
+                            });
+
+                            form.on('submit(edit-user)', function (callbackData) {
+                                data.name = callbackData.field.name;
+                                data.userName = callbackData.field.userName;
+                                data.password = callbackData.field.password;
+                                data.mobile = callbackData.field.mobile;
+
+
+                                http.jsonPut(contextPath + 'user', data, function (result) {
+                                    // 正常
+                                    table.reload('userReload');
+                                    layer.close(index);
+                                }, function (error) {
+                                    http.processError(error, '更新用户信息失败');
+                                });
+
+                                return false;
+                            });
+
+                        },
+                        cancel: function () {
+                        }
+
+                    });
+                    break;
+
+                case 'del':
+                    var response = delObject(contextPath + 'user/' + data.id);
+                    console.log(response.ok);
+                    console.log(response.status);
+
+                    if (response.ok) {
+                        // 正常
+                        table.reload('userReload');
+                        layer.close(index);
+                    } else {
+                        console.log(response);
+                    }
+                    break;
+
+            }
+
+
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,19 @@
+<div th:fragment="context-path" xmlns:th="http://www.thymeleaf.org">
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+        var contextPath = /*[[@{/}]]*/;
+        if (contextPath.charAt(contextPath.length - 1) !== '/') {
+            contextPath += '/';
+        }
+        /*]]>*/
+    </script>
+</div>
+<div th:fragment="css-lib" xmlns:th="http://www.thymeleaf.org">
+    <link rel="stylesheet" th:href="@{/webjars/layui/css/layui.css}">
+</div>
+
+<div th:fragment="js-lib" xmlns:th="http://www.thymeleaf.org">
+    <script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+    <script th:src="@{/js/http.js}"></script>
+    <script th:src="@{/webjars/layui/layui.js}"></script>
+</div>

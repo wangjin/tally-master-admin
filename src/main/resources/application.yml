@@ -1,0 +1,20 @@
+log:
+  name: tally-master-admin
+  path: /Users/wangjin/Downloads
+  level: debug
+  package:
+    name: com.github.wangjin252
+
+
+
+# 图片保存路径
+picture:
+  location: /Users/wangjin/Downloads
+
+# 数据库配置
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tallymaster?useUnicode=true&characterEncoding=UTF-8&useSSL=false&connectTimeout=60000&socketTimeout=60000&autoReconnect=true&autoReconnectForPools=true&failOverReadOnly=false
+    username: tallymaster
+    password: tallymaster

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>工时管理系统</title>
+    <meta th:remove="tag" th:include="fragment/scripts :: css-lib">
+    <meta th:remove="tag" th:include="fragment/scripts :: context-path">
+
+</head>
+<body>
+
+<!-- 布局容器 -->
+<div class="layui-layout layui-layout-admin">
+    <!-- 头部 -->
+    <div class="layui-header">
+        <div class="layui-logo">工时管理系统</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    贤心
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退了</a></li>
+        </ul>
+    </div>
+
+    <!-- 侧边栏 -->
+    <div class="layui-side layui-bg-black" >
+        <div class="layui-side-scroll">
+
+            <ul left-bar left-id="1" class="layui-nav layui-nav-tree" lay-filter="left-nav" style="border-radius: 0;">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;" data-url="http://222.73.220.183/new_portal/Admin" data-id="1" tab-item>
+                        欢迎
+                    </a>
+                </li>
+
+
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;">
+                        系统管理
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" th:data-url="@{/user/page}" data-id="21" tab-item>
+                                用户管理
+                            </a>
+                        </dd>
+                    </dl>
+                </li>
+
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;" data-url="tally/list" data-id="3" tab-item>
+                        工时管理
+                    </a>
+                </li>
+
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:;" data-url="site/list" data-id="4" tab-item>
+                        工地管理
+                    </a>
+                </li>
+            </ul>
+
+        </div>
+    </div>
+
+    <!-- 主体 -->
+    <div class="layui-body">
+        <div class="layui-tab layui-tab-brief" lay-filter="top-tab" lay-allowClose="true" style="margin: 0;">
+            <ul class="layui-tab-title"></ul>
+            <div class="layui-tab-content" style="padding: 10px;"></div>
+        </div>
+    </div>
+
+    <!-- 底部 -->
+    <div class="layui-footer" style="text-align: center; line-height: 44px;">
+        Copyright © 2018 <a href="#" target="_blank">New CMS</a> Powered by Connext
+    </div>
+</div>
+
+<object th:remove="tag" th:include="fragment/scripts :: js-lib"></object>
+<script type="text/javascript">
+
+
+    var tabContentHeight;
+
+    function ani(id) {
+
+        var $iframe = $("[iframe-id=" + id + "]");
+
+        $iframe.hide();
+        $iframe.fadeIn(127);
+    }
+
+    layui.use(['element', 'layer'], function () {
+        var element = layui.element;
+        var tabFilter = 'top-tab';
+        var tab = $('.layui-tab[lay-filter=' + tabFilter + ']').eq(0);
+        var tabContent = tab.children('.layui-tab-content').eq(0);
+        var tabTitle = tab.children('.layui-tab-title').eq(0);
+
+        $(window).resize(function () {
+            //设置顶部切换卡容器度
+
+            tabContentHeight = $(this).height() - 60 - 41 - 44 - 20; //头部高度 顶部切换卡高度 底部高度
+
+            tabContent.height(tabContentHeight);
+            //设置顶部切换卡容器内每个iframe高度
+            tabContent.find('iframe').each(function () {
+                $(this).height(tabContent.height());
+            });
+        }).resize();
+
+        // 监听Tab切换，以改变地址hash值
+        element.on('tab(' + tabFilter + ')', function () {
+
+            var id;
+
+            try {
+                id = this.getAttribute('lay-id');
+            } catch (e) {
+                id = null;
+            }
+            if (id != null) {
+                location.hash = tabFilter + '=' + id;
+                ani(id);
+            }
+        });
+
+        // 点击左侧链接的时候
+        $('[tab-item]').bind('click', function () {
+            var id = $(this).attr('data-id');
+            var title = $(this).text();
+            var url = $(this).attr('data-url');
+
+            var iframes = $("[lay-id=" + id + "]").length;
+            if (iframes === 0) {
+                // 不存在的情况
+                var iframe = '<iframe';
+                iframe += ' src="' + url + '" iframe-id="' + id + '"';
+                iframe += ' style="width: 100%; height: ' + tabContent.height() + 'px; border: 0px;"';
+                iframe += '></iframe>';
+                //顶部切换卡新增一个卡片
+                element.tabAdd(tabFilter, {'title': title, 'content': iframe, 'id': id});
+                ani(id);
+            }
+            // 添加记录
+            location.hash = tabFilter + '=' + id;
+            // 改变tab
+            element.tabChange(tabFilter, id);
+        });
+
+        var layid = location.hash.replace(/^#top-tab=/, '');
+        // layui-this
+        if (layid) {
+            $('.layui-side-scroll').find('[data-id=' + layid + ']').eq(0).click();
+        } else {
+            $('.layui-side-scroll').find('[data-url][data-id]').eq(0).click();
+        }
+    });
+</script>
+</body>
+</html>
