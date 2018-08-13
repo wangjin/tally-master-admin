@@ -97,13 +97,16 @@
                 success: function (layero, index) {
 
                     form.on('submit(edit-user)', function (callbackData) {
-                        var response = postData(contextPath + 'user', callbackData.field);
-                        if (response.ok) {
-                            // 正常
+
+                        http.jsonPost(contextPath + 'user', callbackData.field, function (result) {
+
+                            console.log(result);
+
                             table.reload('userReload');
                             layer.close(index);
-                        } else {
-                        }
+                        }, function (error) {
+                            http.processError(error, '添加用户信息失败');
+                        });
 
                         return false;
                     });
@@ -151,7 +154,6 @@
 
 
                                 http.jsonPut(contextPath + 'user', data, function (result) {
-                                    // 正常
                                     table.reload('userReload');
                                     layer.close(index);
                                 }, function (error) {
@@ -169,17 +171,17 @@
                     break;
 
                 case 'del':
-                    var response = delObject(contextPath + 'user/' + data.id);
-                    console.log(response.ok);
-                    console.log(response.status);
 
-                    if (response.ok) {
-                        // 正常
-                        table.reload('userReload');
-                        layer.close(index);
-                    } else {
-                        console.log(response);
-                    }
+                    http.jsonDel(contextPath + 'user/' + data.id, function (result) {
+                        if (result.status === 204) {
+                            table.reload('userReload');
+                        } else if (result.status === 404) {
+                            table.reload('userReload');
+                            layer.alert('用户不存在');
+                        }
+                    }, function (error) {
+                        http.processError(error, '删除用户失败');
+                    });
                     break;
 
             }

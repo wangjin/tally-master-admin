@@ -65,6 +65,7 @@ public class UserController {
      * @return ResponseEntity<User>
      */
     @PostMapping
+    @ResponseBody
     public ResponseEntity<User> add(@RequestBody User user) {
         try {
             user = userService.saveOrUpdate(user);
@@ -73,7 +74,7 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     /**
@@ -83,6 +84,7 @@ public class UserController {
      * @return ResponseEntity<User>
      */
     @PutMapping
+    @ResponseBody
     public ResponseEntity<User> edit(@RequestBody User user) {
         try {
             user = userService.saveOrUpdate(user);
@@ -101,6 +103,7 @@ public class UserController {
      * @return ResponseEntity<User>
      */
     @DeleteMapping(value = "/{id}")
+    @ResponseBody
     public ResponseEntity<User> del(@PathVariable(value = "id") Integer id) {
         try {
             User user = userService.findById(id);
@@ -115,6 +118,6 @@ public class UserController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
